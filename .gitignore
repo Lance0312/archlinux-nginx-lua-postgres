@@ -5,3 +5,5 @@
 *.swp
 pkg/
 src/
+ngx_lua/
+ngx_postgres/

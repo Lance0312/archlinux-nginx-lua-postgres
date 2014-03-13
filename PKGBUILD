@@ -1,17 +1,21 @@
 # $Id: PKGBUILD 106490 2014-03-04 16:35:59Z bpiotrowski $
-# Maintainer: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
-# Maintainer: Sébastien Luttringer
+# Maintainer:  Lance Chen <cyen0312+aur@gmail.com>
+# Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Contributor: Sébastien Luttringer
 # Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
 # Contributor: Miroslaw Szot <mss@czlug.icis.pcz.pl>
 
-pkgname=nginx
+_pkgname=nginx
+pkgname="${_pkgname}-lua-postgres"
 pkgver=1.4.6
 pkgrel=1
-pkgdesc='Lightweight HTTP server and IMAP/POP3 proxy server'
+pkgdesc='Lightweight HTTP server and IMAP/POP3 proxy server, with lua and postgresql modules support'
 arch=('i686' 'x86_64')
 url='http://nginx.org'
 license=('custom')
-depends=('pcre' 'zlib' 'openssl')
+depends=('pcre' 'zlib' 'openssl' 'luajit' 'postgresql-libs')
+conflicts=('nginx')
+provides=('nginx')
 backup=('etc/nginx/fastcgi.conf'
         'etc/nginx/fastcgi_params'
         'etc/nginx/koi-win'
@@ -24,14 +28,18 @@ backup=('etc/nginx/fastcgi.conf'
         'etc/logrotate.d/nginx')
 install=nginx.install
 source=($url/download/nginx-$pkgver.tar.gz
+        ngx_lua::git+https://github.com/chaoslawful/lua-nginx-module.git#tag=v0.9.5
+        ngx_postgres::git+https://github.com/FRiCKLE/ngx_postgres.git#tag=0.9
         service
         logrotate)
 md5sums=('dee0fc2151cebde709c93ca20d8f239f'
+         'SKIP'
+         'SKIP'
          'ce9a06bcaf66ec4a3c4eb59b636e0dfd'
          '3441ce77cdd1aab6f0ab7e212698a8a7')
 
 build() {
-  cd $pkgname-$pkgver
+  cd "$_pkgname-$pkgver"
   ./configure \
     --prefix=/etc/nginx \
     --conf-path=/etc/nginx/nginx.conf \
@@ -64,13 +72,15 @@ build() {
     --with-http_flv_module \
     --with-http_mp4_module \
     --with-http_secure_link_module \
-    --with-http_sub_module
+    --with-http_sub_module \
+    --add-module=../ngx_lua \
+    --add-module=../ngx_postgres
 
   make
 }
 
 package() {
-  cd $pkgname-$pkgver
+  cd "$_pkgname-$pkgver"
   make DESTDIR="$pkgdir" install
 
   sed -e 's|\<user\s\+\w\+;|user html;|g' \
@@ -91,7 +101,7 @@ package() {
 
   install -Dm644 ../logrotate "$pkgdir"/etc/logrotate.d/nginx
   install -Dm644 ../service "$pkgdir"/usr/lib/systemd/system/nginx.service
-  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/"$_pkgname"/LICENSE
 
   rmdir "$pkgdir"/run
 }
