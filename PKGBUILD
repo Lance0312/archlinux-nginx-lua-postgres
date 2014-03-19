@@ -8,12 +8,13 @@
 _pkgname=nginx
 pkgname="${_pkgname}-lua-postgres"
 pkgver=1.4.6
-pkgrel=1
+pkgrel=2
 pkgdesc='Lightweight HTTP server and IMAP/POP3 proxy server, with lua and postgresql modules support'
 arch=('i686' 'x86_64')
 url='http://nginx.org'
 license=('custom')
 depends=('pcre' 'zlib' 'openssl' 'luajit' 'postgresql-libs')
+makedepends=('git')
 conflicts=('nginx')
 provides=('nginx')
 backup=('etc/nginx/fastcgi.conf'
