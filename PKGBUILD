@@ -29,7 +29,7 @@ backup=('etc/nginx/fastcgi.conf'
         'etc/logrotate.d/nginx')
 install=nginx.install
 source=($url/download/nginx-$pkgver.tar.gz
-        ngx_lua::git+https://github.com/chaoslawful/lua-nginx-module.git#tag=v0.9.5
+        ngx_lua::git+https://github.com/chaoslawful/lua-nginx-module.git#tag=v0.9.7
         ngx_postgres::git+https://github.com/FRiCKLE/ngx_postgres.git#tag=0.9
         service
         logrotate)
